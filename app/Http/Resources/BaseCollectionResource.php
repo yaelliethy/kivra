@@ -8,7 +8,8 @@ class BaseCollectionResource extends ResourceCollection
 {
     public function toArray($request)
     {
-        if($this instanceof LengthAwarePaginator){
+        //Check if paginated resource
+        if(method_exists($this->resource, 'total')){
             return [
                 'data' => $this->collection,
                 'meta' => [

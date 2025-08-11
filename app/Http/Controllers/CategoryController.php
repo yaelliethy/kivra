@@ -46,30 +46,54 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        try{
+            $category = $this->categoryRepository->create($request->validated());
+            return ApiResponse::success(new CategoryResource($category));
+        }
+        catch(\Exception $e){
+            return ApiResponse::error($e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show($id)
     {
-        //
+        try{
+            $category = Category::findOrFail($id);
+            return ApiResponse::success(new CategoryResource($category));
+        }
+        catch(\Exception $e){
+            return ApiResponse::error($e->getMessage());
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, String $id)
     {
-        //
+        try{
+            $category = $this->categoryRepository->update($id, $resquest->validated());
+            return ApiResponse::success(new CategoryResource($category));
+        }
+        catch(\Exception $e){
+            return ApiResponse::error($e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(String $id)
     {
-        //
+        try{
+            $this->categoryRepository->delete($id);
+            return ApiResponse::success([]);
+        }
+        catch(\Exception $e){
+            return ApiResponse::error($e->getMessage());
+        }
     }
 }

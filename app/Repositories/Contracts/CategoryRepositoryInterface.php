@@ -10,4 +10,6 @@ interface CategoryRepositoryInterface
 {
     public function all();
     public function filter(Request $request);
+    public function create(array $data);
+    public function update(int $id, array $data);
 }
