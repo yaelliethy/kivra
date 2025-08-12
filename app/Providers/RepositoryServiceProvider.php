@@ -15,6 +15,8 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Contracts\CartItemRepositoryInterface;
 use App\Repositories\Eloquent\CartItemRepository;
+use App\Repositories\Contracts\OrderItemRepositoryInterface;
+use App\Repositories\Eloquent\OrderItemRepository;
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -36,5 +38,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->scoped(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->scoped(UserRepositoryInterface::class, UserRepository::class);
         $this->app->scoped(CartItemRepositoryInterface::class, CartItemRepository::class);
+        $this->app->scoped(OrderItemRepositoryInterface::class, OrderItemRepository::class);
     }
 }
