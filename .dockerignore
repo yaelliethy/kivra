@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Node
+node_modules
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# PHP vendor (we copy from Composer stage)
+vendor
+
+# Laravel
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+bootstrap/cache/*.php
+.env
+.env.*
+
+# IDE/editor
+*.swp
+*.swo
+*.swn
+*.swm
+*.idea
+*.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
