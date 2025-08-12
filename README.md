@@ -37,27 +37,6 @@ ports:
 ```
 Then connect to 127.0.0.1:3307.
 
-## API overview
-
-Base URL: `http://localhost:8000/api`
-
-- Auth:
-  - POST `/auth/signup`
-  - POST `/auth/login`
-  - POST `/auth/logout`
-- Products:
-  - GET `/products`
-  - GET `/products/{id}`
-  - (Protected) POST/PUT/DELETE under `/api/products`
-- Categories:
-  - GET `/categories`
-  - GET `/categories/{id}`
-  - Lookup: GET `/lookups/categories`
-- Carts, Cart Items, Orders:
-  - Protected endpoints under `/api/carts`, `/api/cartItems`, `/api/orders`
-
-Protected endpoints require a JWT. After login, use the token returned (the app also sets an HttpOnly cookie).
-
 ## Postman collection
 
 A ready-made collection is included:
