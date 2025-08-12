@@ -8,9 +8,15 @@ class BaseCollectionResource extends ResourceCollection
 {
     public function toArray($request)
     {
-        if($this instanceof LengthAwarePaginator){
+        $resourceClass = $this->collects ?? null;
+
+        $data = $this->collection
+            ->map(fn($item) => (new $resourceClass($item))->toArray($request))
+            ->all();
+
+        if (method_exists($this->resource, 'total')) {
             return [
-                'data' => $this->collection,
+                'data' => $data,
                 'meta' => [
                     'total' => $this->total(),
                     'per_page' => $this->perPage(),
@@ -21,8 +27,6 @@ class BaseCollectionResource extends ResourceCollection
                 ],
             ];
         }
-        return [
-            'data' => $this->collection,
-        ];
+        return ['data' => $data];
     }
 }

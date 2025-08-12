@@ -11,7 +11,8 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $user = $this->user();
+        return $user !== null && $user->isAdmin();
     }
 
     /**
@@ -22,7 +23,9 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'string|max:255|nullable',
+            'description' => 'string|max:255|nullable',
+            'image_url' => 'url|string|max:255|nullable',
         ];
     }
 }

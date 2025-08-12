@@ -3,23 +3,15 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Order;
 
-class UpdateOrderRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        if($this->user() === null){
-            return false;
-        }
-        $order = Order::where('id', $this->route('id'))->first();
-        if (!$order) {
-            return false;
-        }
-        return $order->user()->id === $this->user()->id;
+        return $this->user() !== null && $this->user()->is_admin;
     }
 
     /**
@@ -30,9 +22,10 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address' => 'string|max:255',
-            'status' => 'string|max:255',
-            'total_amount' => 'numeric|min:0',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+            'is_admin' => 'required|boolean',
         ];
     }
 }

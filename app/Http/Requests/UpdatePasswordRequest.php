@@ -4,14 +4,17 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreOrderItemRequest extends FormRequest
+class UpdatePasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        if(!$this->route('id')){
+            return $this->user() !== null;
+        }
+        return $this->user() !== null && $this->user()->is_admin;
     }
 
     /**
@@ -22,7 +25,10 @@ class StoreOrderItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'id' => 'nullable|string|exists:users,id',
+            'old_password' => 'required|string|min:8',
+            'password' => 'required|string|min:8',
+            'password_confirmation' => 'required|string|min:8|same:password',
         ];
     }
 }

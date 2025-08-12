@@ -3,10 +3,10 @@
 namespace App\Http\Resources\Carts;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\BaseResource;
-use App\Http\Resources\Carts\CartItemResource;
-class CartResource extends BaseResource
+use App\Http\Resources\Products\ProductResource;
+use App\Http\Resources\Carts\CartResource;
+class CartItemResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +17,8 @@ class CartResource extends BaseResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'product' => new ProductResource($this->product),
+            'quantity' => $this->quantity,
         ];
     }
 }

@@ -34,7 +34,14 @@ return [
             'middleware' => [],
 
             // Only routes from these controllers
-            'controllers' => [],
+            'controllers' => [
+                'CategoryController',
+                'ProductController',
+                'CartController',
+                'CartItemController',
+                'OrderController',
+                'UserController',
+            ],
         ],
 
         // Routes to explicitly exclude
@@ -62,11 +69,16 @@ return [
         'folders' => [
             // Grouping strategy: 'prefix', 'nested_path', 'controller'
             'strategy' => 'nested_path',
-            'max_depth' => 3, //  when strategy is nested_path 
+            'max_depth' => 5, //  when strategy is nested_path
 
             // Custom name mapping for folders
             'mapping' => [
-                // Example: 'admin' => 'Administration'
+                'admin' => 'Admin',
+                'user' => 'User',
+                'product' => 'Product',
+                'cart' => 'Cart',
+                'cart_item' => 'Cart Item',
+                'order' => 'Order',
             ],
         ],
 
@@ -119,7 +131,7 @@ return [
         ],
 
         // Middleware that indicate protected routes
-        'protected_middleware' => ['auth:api'],
+        'protected_middleware' => ['api_auth'],
     ],
 
     /*
@@ -148,6 +160,6 @@ return [
         'path' => storage_path('postman'),
 
         // File naming pattern (date will be appended)
-        'filename' => 'api_collection',
+        'filename' => 'api_collection.json',
     ],
 ];

@@ -2,8 +2,9 @@
 
 namespace App\Http\Responses;
 use App\Http\Resources\BaseCollectionResource;
-
-class ApiResponse
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+class ApiResponse extends Response
 {
     public static function success($data, $message = 'Success', $status = 200)
     {
@@ -13,15 +14,15 @@ class ApiResponse
             'status' => $status,
         ];
         if($data instanceof BaseCollectionResource){
-            $response = array_merge($response, $data->toArray(null));
+            $response = array_merge($response, $data->toArray(Request::createFromGlobals()));
         }else{
             $response['data'] = $data;
         }
-        return response()->json($response, $status);
+        return new Response($response, $status);
     }
     public static function error($messages, $status = 400)
     {
-        return response()->json([
+        return new Response([
             'success' => false,
             'messages' => $messages,
             'status' => $status,

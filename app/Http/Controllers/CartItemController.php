@@ -3,48 +3,94 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCartItemRequest;
+use App\Http\Responses\ApiResponse;
+use App\Exceptions\UserException;
+use Illuminate\Support\Facades\Log;
+use App\Repositories\Contracts\CartItemRepositoryInterface;
+use App\Http\Resources\Carts\CartItemResource;
+use Illuminate\Http\Request;
 use App\Http\Requests\UpdateCartItemRequest;
-use App\Models\CartItem;
-
+use App\Http\Requests\PaginatedRequest;
 class CartItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected CartItemRepositoryInterface $cartItemRepository;
+
+    public function __construct(CartItemRepositoryInterface $cartItemRepository)
     {
-        //
+        $this->cartItemRepository = $cartItemRepository;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCartItemRequest $request)
+    public function index(PaginatedRequest $request)
     {
-        //
+        try{
+            $cartItems = $this->cartItemRepository->filter($request->all(), $request->user());
+            return ApiResponse::success(CartItemResource::collection($cartItems));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while fetching cart items");
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CartItem $cartItem)
+    public function details(Request $request, String $id)
     {
-        //
+        try{
+            $cartItem = $this->cartItemRepository->details($id, $request->user());
+            return ApiResponse::success(new CartItemResource($cartItem));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while fetching cart item details");
+        }
+    }
+    public function addToCart(StoreCartItemRequest $request)
+    {
+        try{
+            $cartItem = $this->cartItemRepository->addToCart($request->validated(), $request->user());
+            return ApiResponse::success(new CartItemResource($cartItem));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while adding to cart");
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCartItemRequest $request, CartItem $cartItem)
+    public function removeFromCart(Request $request, String $id)
     {
-        //
+        try{
+            $cartItem = $this->cartItemRepository->removeFromCart($id, $request->user());
+            return ApiResponse::success(new CartItemResource($cartItem));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while removing from cart");
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CartItem $cartItem)
+    public function updateQuantity(UpdateCartItemRequest $request, String $id)
     {
-        //
+        try{
+            $cartItem = $this->cartItemRepository->updateQuantity($id, $request->user(), $request->validated()['quantity']);
+            return ApiResponse::success(new CartItemResource($cartItem));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while updating quantity");
+        }
     }
 }

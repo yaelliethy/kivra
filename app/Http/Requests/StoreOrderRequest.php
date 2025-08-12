@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Cart;
 
 class StoreOrderRequest extends FormRequest
 {
@@ -11,7 +12,14 @@ class StoreOrderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        if($this->user() === null){
+            return false;
+        }
+        $cart = Cart::where('id', $this->cart_id)->first();
+        if (!$cart) {
+            return false;
+        }
+        return $cart->user()->id === $this->user()->id;
     }
 
     /**
@@ -22,7 +30,8 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'cart_id' => 'required|string|exists:carts,id',
+            'address' => 'required|string|max:255',
         ];
     }
 }

@@ -2,24 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Models\CartItem;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Order;
 
-class UpdateOrderRequest extends FormRequest
+class DeleteCartItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        if($this->user() === null){
-            return false;
-        }
-        $order = Order::where('id', $this->route('id'))->first();
-        if (!$order) {
-            return false;
-        }
-        return $order->user()->id === $this->user()->id;
+        $cartItemUserId = CartItem::where('id', $this->route('id'))->cart()->user()->id;
+        return $cartItemUserId === $this->user()->id;
     }
 
     /**
@@ -30,9 +24,7 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address' => 'string|max:255',
-            'status' => 'string|max:255',
-            'total_amount' => 'numeric|min:0',
+            'id' => 'required|string|exists:cart_items,id',
         ];
     }
 }

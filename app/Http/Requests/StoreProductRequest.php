@@ -11,7 +11,6 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        //Check if user is authenticated
         return $this->user() !== null;
     }
 
@@ -26,8 +25,9 @@ class StoreProductRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'image_url' => 'required|string|max:255',
+            'image_url' => 'required|string|url|max:255',
             'category_id' => 'required|exists:categories,id',
+            'stock' => 'required|integer|min:0',
         ];
     }
 }

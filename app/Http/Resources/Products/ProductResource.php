@@ -3,9 +3,10 @@
 namespace App\Http\Resources\Products;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Categories\CategoryLookupResource;
-class ProductResource extends JsonResource
+use App\Http\Resources\BaseResource;
+use App\Http\Resources\Users\UserLookupResource;
+class ProductResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -22,8 +23,8 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'stock' => $this->stock,
             'category' => new CategoryLookupResource($this->category),
+            'seller' => $this->user ? new UserLookupResource($this->user) : null,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

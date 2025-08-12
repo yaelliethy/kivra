@@ -7,10 +7,12 @@ use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Http\Responses\ApiResponse;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
-use Illuminate\Http\Request;
 use App\Http\Resources\Categories\CategoryResource;
 use App\Http\Resources\Categories\CategoryLookupResource;
 use App\Http\Requests\PaginatedRequest;
+use Illuminate\Support\Facades\Log;
+use App\Exceptions\UserException;
+use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     protected CategoryRepositoryInterface $categoryRepository;
@@ -25,11 +27,15 @@ class CategoryController extends Controller
     public function index(PaginatedRequest $request)
     {
         try{
-            $categories = $this->categoryRepository->filter($request);
+            $categories = $this->categoryRepository->filter($request->validated());
             return ApiResponse::success(CategoryResource::collection($categories));
         }
+        catch(UserException $e){
+            return $e->render($request);
+        }
         catch(\Exception $e){
-            return ApiResponse::error($e->getMessage());
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while fetching categories");
         }
     }
     public function lookup(){
@@ -38,7 +44,8 @@ class CategoryController extends Controller
             return ApiResponse::success(CategoryLookupResource::collection($categories));
         }
         catch(\Exception $e){
-            return ApiResponse::error($e->getMessage());
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while fetching categories");
         }
     }
     /**
@@ -46,30 +53,70 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        try{
+            $category = $this->categoryRepository->create($request->validated());
+            return ApiResponse::success(new CategoryResource($category));
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while creating category");
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Request $request, String $id)
     {
-        //
+        try{
+            $category = $this->categoryRepository->find($id);
+            if(!$category){
+                return ApiResponse::error("Category not found");
+            }
+            return ApiResponse::success(new CategoryResource($category));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while fetching category");
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, String $id)
     {
-        //
+        try{
+            $category = $this->categoryRepository->update($id, $request->validated());
+            return ApiResponse::success(new CategoryResource($category));
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while updating category", 500);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Request $request, String $id)
     {
-        //
+        try{
+            $this->categoryRepository->delete($id);
+            return ApiResponse::success([]);
+        }
+        catch(UserException $e){
+            return $e->render($request);
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
+            return ApiResponse::error("An error occurred while deleting category", 500);
+        }
     }
 }
