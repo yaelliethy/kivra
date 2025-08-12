@@ -1,61 +1,65 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Quick start (Docker)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- Requirements: Docker Desktop (or Docker Engine) and Docker Compose.
+- Run:
+  - Linux/macOS/WSL:
+    ```bash
+    docker compose up -d --build
+    ```
+  - Windows (PowerShell):
+    ```powershell
+    docker compose up -d --build
+    ```
 
-## About Laravel
+App will be available at:
+- http://localhost:8000
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The container will:
+- Generate APP_KEY and JWT secret if missing
+- Run database migrations and seeders
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Default admin
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Email: admin@admin.com
+- Password: password
 
-## Learning Laravel
+Created by the seeder on first boot.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Database
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- MySQL service runs inside Docker
+- Connection (from the app): host `db`, port `3306`, database `laravel`, user `laravel`, password `laravel`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+If you need to connect from your host with a GUI, add a port mapping under `db` in `docker-compose.yml`, for example:
+```yaml
+ports:
+  - "3307:3306"
+```
+Then connect to 127.0.0.1:3307.
 
-## Laravel Sponsors
+## API overview
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Base URL: `http://localhost:8000/api`
 
-### Premium Partners
+- Auth:
+  - POST `/auth/signup`
+  - POST `/auth/login`
+  - POST `/auth/logout`
+- Products:
+  - GET `/products`
+  - GET `/products/{id}`
+  - (Protected) POST/PUT/DELETE under `/api/products`
+- Categories:
+  - GET `/categories`
+  - GET `/categories/{id}`
+  - Lookup: GET `/lookups/categories`
+- Carts, Cart Items, Orders:
+  - Protected endpoints under `/api/carts`, `/api/cartItems`, `/api/orders`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Protected endpoints require a JWT. After login, use the token returned (the app also sets an HttpOnly cookie).
 
-## Contributing
+## Postman collection
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+A ready-made collection is included:
+- `storage/postman/api_collection.json`
+- It uses `{{base_url}}` = `http://localhost:8000`
